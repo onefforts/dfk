@@ -20,7 +20,7 @@ class Quest:
 
     def cancel_quest(self, hero_id, private_key, nonce, gas_price_gwei, tx_timeout_seconds):
         return quest_core.cancel_quest(hero_id, private_key, nonce, gas_price_gwei, tx_timeout_seconds, self.rpc_address, self.logger)
-    
+
     def hero_to_quest_id(self, hero_id):
         return quest_core.hero_to_quest_id(hero_id, self.rpc_address)
 
@@ -41,6 +41,18 @@ class Quest:
 
     def quest_address_to_type(self, quest_address):
         return quest_core.quest_address_to_type(quest_address, self.rpc_address)
-    
+
     def get_current_stamina(self, hero_id):
         return quest_core.get_current_stamina(hero_id, self.rpc_address)
+
+    def get_min_stamina(self, hero_ids):
+        if(len(hero_ids) == 0):
+          return 0
+
+        min_stamina=100
+        for hero_id in hero_ids:
+          stamina = self.get_current_stamina(hero_id)
+          if(stamina < min_stamina):
+            min_stamina = stamina
+
+        return min_stamina
