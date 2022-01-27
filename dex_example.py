@@ -27,20 +27,20 @@ if __name__ == "__main__":
     #########################################################################
     # gardening(Farming)用pool_id出力
     #########################################################################
-    pp = pprint.PrettyPrinter(indent=4)
-    for i in range(780):
-      liquidity_pool_id = i
-      pool_info = utils.human_readable_pool_info(gardens.pool_info(liquidity_pool_id, rpc_server))
-      #pp.pprint(pool_info)
-      liquidity_pool = pool.UniswapV2Pair(pool_info["address"], rpc_server, logger)
-      liquidity_pool_symbol = liquidity_pool.symbol()
-      liquidity_pool_token0_address = liquidity_pool.token_0()
-      liquidity_pool_token0 = erc20.symbol(liquidity_pool_token0_address, rpc_server)
-      #logger.info("liquidity_pool_token0 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token0_address, rpc_server))))
-      liquidity_pool_token1_address = liquidity_pool.token_1()
-      liquidity_pool_token1 = erc20.symbol(liquidity_pool_token1_address, rpc_server)
-      #logger.info(liquidity_pool_token1 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token1_address, rpc_server))))
-      logger.info("pool_id: " + str(liquidity_pool_id) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1)
+#    pp = pprint.PrettyPrinter(indent=4)
+#    for i in range(780):
+#      liquidity_pool_id = i
+#      pool_info = utils.human_readable_pool_info(gardens.pool_info(liquidity_pool_id, rpc_server))
+#      #pp.pprint(pool_info)
+#      liquidity_pool = pool.UniswapV2Pair(pool_info["address"], rpc_server, logger)
+#      liquidity_pool_symbol = liquidity_pool.symbol()
+#      liquidity_pool_token0_address = liquidity_pool.token_0()
+#      liquidity_pool_token0 = erc20.symbol(liquidity_pool_token0_address, rpc_server)
+#      #logger.info("liquidity_pool_token0 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token0_address, rpc_server))))
+#      liquidity_pool_token1_address = liquidity_pool.token_1()
+#      liquidity_pool_token1 = erc20.symbol(liquidity_pool_token1_address, rpc_server)
+#      #logger.info(liquidity_pool_token1 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token1_address, rpc_server))))
+#      logger.info("pool_id: " + str(liquidity_pool_id) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1)
 
     # Automated Market Making pool
 #    logger.info("Liquidity pool count:\t" + str(market_place_factory.all_pairs_length(rpc_server)))
@@ -55,27 +55,27 @@ if __name__ == "__main__":
 #    liquidity_pool_token1 = erc20.symbol(liquidity_pool_token1_address, rpc_server)
 #    #logger.info(liquidity_pool_token1 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token1_address, rpc_server))))
 #    logger.info("pool_id: " + str(liquidity_pool_id) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1)
-#    for i in range(780):
-#      liquidity_pool_id = i
-#      liquidity_pool_address = market_place_factory.all_pairs(liquidity_pool_id, rpc_server)
-#      # pp = pprint.PrettyPrinter(indent=4)
-#      # pp.pprint(liquidity_pool_address)
-#      liquidity_pool = pool.UniswapV2Pair(liquidity_pool_address, rpc_server, logger)
-#      liquidity_pool_symbol = liquidity_pool.symbol()
-#      liquidity_pool_token0_address = liquidity_pool.token_0()
-#      liquidity_pool_token0 = erc20.symbol(liquidity_pool_token0_address, rpc_server)
-#      #logger.info("liquidity_pool_token0 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token0_address, rpc_server))))
-#      liquidity_pool_token1_address = liquidity_pool.token_1()
-#      liquidity_pool_token1 = erc20.symbol(liquidity_pool_token1_address, rpc_server)
-#      #logger.info(liquidity_pool_token1 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token1_address, rpc_server))))
-#      logger.info("pool_id: " + str(i) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1)
+    for i in range(780):
+      liquidity_pool_id = i
+      liquidity_pool_address = market_place_factory.all_pairs(liquidity_pool_id, rpc_server)
+      # pp = pprint.PrettyPrinter(indent=4)
+      # pp.pprint(liquidity_pool_address)
+      liquidity_pool = pool.UniswapV2Pair(liquidity_pool_address, rpc_server, logger)
+      liquidity_pool_symbol = liquidity_pool.symbol()
+      liquidity_pool_token0_address = liquidity_pool.token_0()
+      liquidity_pool_token0 = erc20.symbol(liquidity_pool_token0_address, rpc_server)
+      #logger.info("liquidity_pool_token0 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token0_address, rpc_server))))
+      liquidity_pool_token1_address = liquidity_pool.token_1()
+      liquidity_pool_token1 = erc20.symbol(liquidity_pool_token1_address, rpc_server)
+      #logger.info(liquidity_pool_token1 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token1_address, rpc_server))))
+      logger.info("pool_id: " + str(i) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1)
 #      amount_token1 = 1
 #      amount_token0 = erc20.wei2eth(w3, liquidity_pool.expected_amount0(erc20.eth2wei(w3, amount_token1)))
 #      logger.info("pool_id: " + str(i) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1 + " @ " + str(amount_token0) + " " + liquidity_pool_token0 + " per " + liquidity_pool_token1)
-
+#
 #    liquidity_pool_balance = liquidity_pool.balance_of(user_address)
 #    logger.info("LP user balance:\t" + str(erc20.wei2eth(w3, liquidity_pool_balance)))
-#
+
 #    # Garden staking
 #    logger.info("Staking pool count:\t" + str(gardens.pool_length(rpc_server)))
 #    staking_pool = gardens.Garden(liquidity_pool, rpc_server, logger)

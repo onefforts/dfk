@@ -2,7 +2,7 @@ import requests
 
 AUCTIONS_OPEN_GRAPHQL_QUERY = """
                         query {
-                          assistingAuctions(skip: %d, first: %d, orderBy: startedAt, orderDirection: desc, where: {open: true}) {
+                          assistingAuctions(skip: %d, first: %d, orderBy: startingPrice, orderDirection: asc, where: {open: true}) {
                             id
                             seller {
                                 name
@@ -11,7 +11,7 @@ AUCTIONS_OPEN_GRAPHQL_QUERY = """
                               id
                               owner {
                                 owner
-                              }                        
+                              }
                               statGenes
                               generation
                               rarity
@@ -35,9 +35,9 @@ AUCTIONS_OPEN_GRAPHQL_QUERY = """
                               name
                             }
                             open
-                            
+
                           }
-                          
+
                         }
                         """
 
