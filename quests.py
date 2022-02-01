@@ -38,9 +38,9 @@ if __name__ == "__main__":
 
   quest = Quest(rpc_server, logger)
 
-  forager_hero_ids = [[3941, 73223, 81383]]
-  fisher_hero_ids = [[2262, 6329, 92494, 96140, 98331, 102244]]
-  miner_hero_ids = [[7232, 96154, 81878, 10620]]
+  forager_hero_ids = [[3941, 73223], [81383, 112145]]
+  fisher_hero_ids = [[2262, 109286], [92494, 98331], [6329, 102244], [96140, 111055], [109759, 112141]]
+  miner_hero_ids = [[96154, 81878, 10620], [108484, 7232]]
   gardener_hero_ids = [7753, 65057, 81559, 84321, 106392, 106408]
 
   pool_ids = [0, 15, 1, 2, 3, 4] # [JEWEL_ONE, JEWEL_AVAX, JEWEL_1ETH, JEWEL_1BTC]
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     try:
       if(quest_type == 'foraging'):
-        quest_hero_ids = forager_hero_ids
+        quest_hero_ids = forager_hero_ids[quest_index]
         arguments = (foraging.QUEST_CONTRACT_ADDRESS, quest_hero_ids, 3, private_key,
           w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout)
 
@@ -74,6 +74,7 @@ if __name__ == "__main__":
         quest_hero_ids = [gardener_hero_ids[quest_index]]
         quest_data = (pool_id, 0, 0, 0, 0, 0, '', '', ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS)
 
+        quest_func = quest.start_quest_with_data
         arguments = (gardening.QUEST_CONTRACT_ADDRESS, quest_data, quest_hero_ids, 1,
           private_key, w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout)
 
@@ -108,7 +109,6 @@ if __name__ == "__main__":
 
         tx_receipt = quest.complete_quest(quest_hero_ids[0], private_key, w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout)
         quest_result = quest.parse_complete_quest_receipt(tx_receipt)
-        logger.info("Rewards: " + str(quest_result) + " sleep 3 hours.")
 
         # checking level up
         for i in quest_hero_ids:
@@ -117,6 +117,7 @@ if __name__ == "__main__":
           if(readable_hero['state']['xp'] >= (readable_hero['state']['level'] + 1) * 1000):
             requests.post(settings.DISCORD_URL, { 'content': f'hero {readable_hero["id"]} has enough xp for level up' })
 
+        logger.info("Rewards: " + str(quest_result) + " sleep 1 hours.")
         time.sleep(60*60)
     except KeyboardInterrupt:
       break
