@@ -13,8 +13,12 @@ from quest.quest import Quest
 from quest.utils import utils as quest_utils
 import hero.hero as heroes
 import dex.master_gardener
+import auctions.sale.sale_auctions as sales
 
 ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+def calc_level_up_exp(level):
+  return sum(map(lambda x: 1000 * int((x-1)/5) + 1000, range(level+1)))
 
 if __name__ == "__main__":
   quest_type = sys.argv[1]
@@ -26,7 +30,8 @@ if __name__ == "__main__":
   logger.setLevel(logging.DEBUG)
   logging.basicConfig(level=logging.INFO, format=log_format, stream=sys.stdout)
 
-  rpc_server = 'https://api.harmony.one'
+  #rpc_server = 'https://api.harmony.one'
+  rpc_server = 'https://rpc.cosmicuniverse.one'
   #rpc_server = 'https://harmony-0.gateway.pokt.network/v1/lb/61d4dc74431851003b635b82'
   logger.info("Using RPC server " + rpc_server)
 
@@ -38,12 +43,17 @@ if __name__ == "__main__":
 
   quest = Quest(rpc_server, logger)
 
-  forager_hero_ids = [[3941, 73223], [81383, 112145]]
-  fisher_hero_ids = [[2262, 109286], [92494, 98331], [6329, 102244], [96140, 111055], [109759, 112141]]
-  miner_hero_ids = [[96154, 81878, 10620], [108484, 7232]]
-  gardener_hero_ids = [7753, 65057, 81559, 84321, 106392, 106408]
+  forager_hero_ids = [[122693, 117531], [139764, 140857, 140865]]
+  fisher_hero_ids = [[6329, 109759, 112141], [109286, 133091]]
+  jewel_miner_hero_ids = [[126149, 126123, 155910]]
+  gold_miner_hero_ids = []
+  gardener_hero_ids = [84321, 106392, 106408, 115135]
 
-  pool_ids = [0, 15, 1, 2, 3, 4] # [JEWEL_ONE, JEWEL_AVAX, JEWEL_1ETH, JEWEL_1BTC]
+  pool_ids = [0, 15, 1, 2] # [JEWEL_ONE, JEWEL_AVAX, JEWEL_1ETH, JEWEL_1BTC]
+
+#  dict_sell_hero = {
+#    81878: 70,
+#  }
 
   ##############################################################################
   # starting quest
@@ -64,9 +74,14 @@ if __name__ == "__main__":
           w3.eth.getTransactionCount(account_address),
           gas_price_gwei, tx_timeout)
 
-      elif(quest_type == 'minning'):
-        quest_hero_ids = miner_hero_ids[quest_index]
+      elif(quest_type == 'jewel_minning'):
+        quest_hero_ids = jewel_miner_hero_ids[quest_index]
         arguments = (minning.JEWEL_QUEST_CONTRACT_ADDRESS, quest_hero_ids, 1, private_key,
+          w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout)
+
+      elif(quest_type == 'gold_minning'):
+        quest_hero_ids = gold_miner_hero_ids[quest_index]
+        arguments = (minning.GOLD_QUEST_CONTRACT_ADDRESS, quest_hero_ids, 1, private_key,
           w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout)
 
       elif(quest_type == 'gardening'):
@@ -79,6 +94,8 @@ if __name__ == "__main__":
           private_key, w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout)
 
       if(quest.get_min_stamina(quest_hero_ids) >= 15):
+
+        logger.info(*arguments)
         quest_func(*arguments)
 
       quest_info = quest_utils.human_readable_quest(quest.get_hero_quest(quest_hero_ids[0]))
@@ -114,8 +131,14 @@ if __name__ == "__main__":
         for i in quest_hero_ids:
           hero = heroes.get_hero(i, rpc_server)
           readable_hero = heroes.human_readable_hero(hero)
-          if(readable_hero['state']['xp'] >= (readable_hero['state']['level'] + 1) * 1000):
+
+          if(readable_hero['state']['xp'] >= calc_level_up_exp(int(readable_hero['state']['level']))):
             requests.post(settings.DISCORD_URL, { 'content': f'hero {readable_hero["id"]} has enough xp for level up' })
+
+#          sell_price = dict_sell_hero.get(i)
+#          if(sell_price is not None):
+#            auction.create_auction(i, auction.ether2wei(sell_price), auction.ether2wei(sell_price), duration=60, winner=None, private_key, w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout, rpc_server, logger):
+
 
         logger.info("Rewards: " + str(quest_result) + " sleep 1 hours.")
         time.sleep(60*60)

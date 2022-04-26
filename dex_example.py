@@ -56,6 +56,7 @@ if __name__ == "__main__":
 #    #logger.info(liquidity_pool_token1 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token1_address, rpc_server))))
 #    logger.info("pool_id: " + str(liquidity_pool_id) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1)
     for i in range(780):
+    #for i in [0, 114, 127]:
       liquidity_pool_id = i
       liquidity_pool_address = market_place_factory.all_pairs(liquidity_pool_id, rpc_server)
       # pp = pprint.PrettyPrinter(indent=4)
@@ -68,9 +69,14 @@ if __name__ == "__main__":
       liquidity_pool_token1_address = liquidity_pool.token_1()
       liquidity_pool_token1 = erc20.symbol(liquidity_pool_token1_address, rpc_server)
       #logger.info(liquidity_pool_token1 + " user balance:\t" + str(erc20.wei2eth(w3, erc20.balance_of(user_address, liquidity_pool_token1_address, rpc_server))))
-      logger.info("pool_id: " + str(i) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1)
-#      amount_token1 = 1
-#      amount_token0 = erc20.wei2eth(w3, liquidity_pool.expected_amount0(erc20.eth2wei(w3, amount_token1)))
+      try:
+        amount_token1 = erc20.wei2eth(w3, liquidity_pool.expected_amount1(erc20.eth2wei(w3, 1)))
+        amount_token0 = erc20.wei2eth(w3, liquidity_pool.expected_amount0(erc20.eth2wei(w3, 1)))
+        logger.info("pool_id: " + str(i) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1 + " @ " + str(round(amount_token0, 6)) + " " + liquidity_pool_token0 + "/" + liquidity_pool_token1 + " " + str(round(amount_token1, 6)) + " " + liquidity_pool_token1 + "/" + liquidity_pool_token0)
+      except ZeroDivisionError as e:
+        #logger.info('catch ZeroDivisionError:', e)
+        logger.info("pool_id: " + str(i) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1 + " @ catch ZeroDivisionError")
+
 #      logger.info("pool_id: " + str(i) + " " + liquidity_pool_symbol + " " + liquidity_pool_token0 + "-" + liquidity_pool_token1 + " @ " + str(amount_token0) + " " + liquidity_pool_token0 + " per " + liquidity_pool_token1)
 #
 #    liquidity_pool_balance = liquidity_pool.balance_of(user_address)

@@ -113,9 +113,9 @@ AUCTIONS_OPEN_GRAPHQL_QUERY = """
                               name
                             }
                             open
-                            
+
                           }
-                          
+
                         }
                         """
 
@@ -131,7 +131,7 @@ AUCTIONS_TOKEN_IDS_GRAPHQL_QUERY = """
                               owner {
                                 owner
                               }
-                              
+
                               statGenes
                               generation
                               rarity
@@ -278,12 +278,21 @@ def get_hero_open_auctions(graphql_address, hero_ids):
         str_hero_ids = str_hero_ids + "\"" + str(id) + "\", "
     str_hero_ids = str_hero_ids + "]"
 
+    print(str_hero_ids)
     r = requests.post(graphql_address, json={'query': AUCTIONS_TOKEN_IDS_GRAPHQL_QUERY % str_hero_ids})
     if r.status_code != 200:
         raise Exception("HTTP error " + str(r.status_code) + ": " + r.text)
     data = r.json()
+    print(data)
     return data['data']['saleAuctions']
 
+
+def api_get_hero_open_auctions(hero_ids):
+    r = requests.post("https://us-central1-defi-kingdoms-api.cloudfunctions.net/query_heroes", data='{"limit":100,"params":[{"field":"saleprice","operator":">=","value":1000000000000000000},{"field":"id","operator":"in","value":[%s]}],"offset":0,"order":{"orderBy":"staminafullat","orderDir":"desc"}}' % ','.join(map(str, hero_ids)), headers={'Content-Type': 'application/json'})
+    if r.status_code != 200:
+        raise Exception("HTTP error " + str(r.status_code) + ": " + r.text)
+    data = r.json()
+    return data
 
 def wei2ether(wei):
     return float(wei) / 1000000000000000000

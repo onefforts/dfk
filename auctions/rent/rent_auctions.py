@@ -49,3 +49,13 @@ def get_open_auctions(graphql_address, skip=0, count=1000):
         raise Exception("HTTP error " + str(r.status_code) + ": " + r.text)
     data = r.json()
     return data['data']['assistingAuctions']
+
+
+def api_get_open_auctions(hero_ids=[]):
+
+    r = requests.post("https://us-central1-defi-kingdoms-api.cloudfunctions.net/query_heroes", data='{"limit":100,"params":[{"field":"assistingprice","operator":">=","value":1000000000000000000},{"field":"id","operator":"in","value":[%s]}],"offset":0,"order":{"orderBy":"staminafullat","orderDir":"desc"}}' % ','.join(map(str, hero_ids)), headers={'Content-Type': 'application/json'})
+    if r.status_code != 200:
+        raise Exception("HTTP error " + str(r.status_code) + ": " + r.text)
+    data = r.json()
+    return data
+
