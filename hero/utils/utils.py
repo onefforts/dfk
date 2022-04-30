@@ -23,12 +23,12 @@ _class = {
     6: "monk",
     7: "pirate",
     16: "paladin",
-    17: "darkKnight",
+    17: "darkknight",
     18: "summoner",
     19: "ninja",
     24: "dragoon",
     25: "sage",
-    28: "dreadKnight"
+    28: "dreadknight"
 }
 
 visual_traits = {
@@ -126,31 +126,69 @@ def parse_element(id):
     return value
 
 
-def parse_stat_genes(genes):
-    stat_genes = {}
-    stat_genes['raw'] = genes
+def genes2traits(genes):
+    traits = []
 
-    stat_raw_kai = "".join(__genesToKai(stat_genes['raw']).split(' '))
-
+    stat_raw_kai = "".join(__genesToKai(genes).split(' '))
     for ki in range(0, len(stat_raw_kai)):
-        stat_trait = stat_traits.get(int(ki / 4), None)
         kai = stat_raw_kai[ki]
         value_num = __kai2dec(kai)
-        stat_genes[stat_trait] = value_num
+        traits.append(value_num)
 
-    stat_genes['class'] = parse_class(stat_genes['class'])
-    stat_genes['subClass'] = parse_class(stat_genes['subClass'])
+    assert len(traits) == 48
+    arranged_traits = [[], [], [], []]
+    for i in range(0, 12):
+        index = i << 2
+        for j in range(0, len(arranged_traits)):
+            arranged_traits[j].append(traits[index + j])
 
-    stat_genes['profession'] = parse_profession(stat_genes['profession'])
+    arranged_traits.reverse()
+    return arranged_traits
 
-    stat_genes['statBoost1'] = parse_stat(stat_genes['statBoost1'])
-    stat_genes['statBoost2'] = parse_stat(stat_genes['statBoost2'])
-    stat_genes['statsUnknown1'] = stats.get(stat_genes['statsUnknown1'], None)  # parse_stat(stat_genes['statsUnknown1'])
-    stat_genes['statsUnknown2'] = stats.get(stat_genes['statsUnknown2'], None)  # parse_stat(stat_genes['statsUnknown2'])
 
-    stat_genes['element'] = parse_element(stat_genes['element'])
+def parse_stat_genes(genes):
+    traits = genes2traits(genes)
+    stats = parse_stat_trait(traits[0])
+    r1 = parse_stat_trait(traits[1])
+    r2 = parse_stat_trait(traits[2])
+    r3 = parse_stat_trait(traits[3])
 
-    return stat_genes
+    stats['r1'] = r1
+    stats['r2'] = r2
+    stats['r3'] = r3
+    stats['raw'] = genes
+
+    return stats
+
+
+def parse_stat_trait(trait):
+
+    if len(trait) != 12:
+        raise Exception("Traits must be an array of 12")
+
+    stats = {}
+    for i in range(0, 12):
+        stat_trait = stat_traits.get(i, None)
+        stats[stat_trait] = trait[i]
+
+    stats['class'] = parse_class(stats['class'])
+    stats['subClass'] = parse_class(stats['subClass'])
+
+    stats['profession'] = parse_profession(stats['profession'])
+
+    stats['passive1'] = parse_class(stats['passive1'])
+    stats['passive2'] = parse_class(stats['passive2'])
+    stats['active1'] = parse_class(stats['active1'])
+    stats['active2'] = parse_class(stats['active2'])
+
+    stats['statBoost1'] = parse_stat(stats['statBoost1'])
+    stats['statBoost2'] = parse_stat(stats['statBoost2'])
+    stats['statsUnknown1'] = stats.get(stats['statsUnknown1'], None)  # parse_stat(stat_genes['statsUnknown1'])
+    stats['statsUnknown2'] = stats.get(stats['statsUnknown2'], None)  # parse_stat(stat_genes['statsUnknown2'])
+
+    stats['element'] = parse_element(stats['element'])
+
+    return stats
 
 
 def parse_visual_genes(genes):
@@ -169,6 +207,22 @@ def parse_visual_genes(genes):
     return visual_genes
 
 
+def hero2str(hero):
+
+    if isinstance(hero['info']['class'], int):
+        c = parse_class(hero['info']['class'])
+        sc = parse_class(hero['info']['subClass'])
+        r = parse_rarity(hero['info']['rarity'])
+        l = hero['state']['level']
+    else:
+        c = hero['info']['class']
+        sc = hero['info']['subClass']
+        r = hero['info']['rarity']
+        l = hero['state']['level']
+
+    return str(hero['id']) + " " + r.title() + " " + c.title() + "/" + sc.title() + " lvl " + str(l)
+
+
 def __genesToKai(genes):
     BASE = len(ALPHABET)
 
@@ -183,6 +237,7 @@ def __genesToKai(genes):
 
     # Pad with leading 1s.
     buf = buf.rjust(48, '1')
+    buf = buf[0:48]
 
     return ' '.join(buf[i:i + 4] for i in range(0, len(buf), 4))
 

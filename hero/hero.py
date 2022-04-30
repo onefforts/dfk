@@ -2,7 +2,7 @@ import copy
 from web3 import Web3
 from .utils import utils as hero_utils
 
-CONTRACT_ADDRESS = '0x5f753dcdf9b1ad9aabc1346614d1f4746fd6ce5c'
+CONTRACT_ADDRESS = '0x5F753dcDf9b1AD9AabC1346614D1f4746fd6Ce5C'
 
 ABI = """
             [
@@ -64,7 +64,6 @@ def block_explorer_link(txid):
 
 
 def transfer(hero_id, owner_private_key, owner_nonce, receiver_address, gas_price_gwei, rpc_address, logger):
-    """Transfer a hero from the owner to the receiver. USE AT YOUR OWN RISK !"""
     w3 = Web3(Web3.HTTPProvider(rpc_address))
     account = w3.eth.account.privateKeyToAccount(owner_private_key)
     w3.eth.default_account = account.address
@@ -87,7 +86,7 @@ def transfer(hero_id, owner_private_key, owner_nonce, receiver_address, gas_pric
     logger.debug("Transaction successfully sent !")
     logger.info("Waiting for transaction " + block_explorer_link(signed_tx.hash.hex()) + " to be mined")
     tx_receipt = w3.eth.wait_for_transaction_receipt(transaction_hash=signed_tx.hash, timeout=24 * 3600,
-                                                     poll_latency=3)
+                                                     poll_latency=2)
     logger.info("Transaction mined !")
     logger.info(str(tx_receipt))
 
@@ -108,6 +107,15 @@ def get_users_heroes(user_address, rpc_address):
     contract = w3.eth.contract(contract_address, abi=ABI)
 
     return contract.functions.getUserHeroes(Web3.toChecksumAddress(user_address)).call()
+
+
+def is_approved_for_all(owner, operator, rpc_address):
+    w3 = Web3(Web3.HTTPProvider(rpc_address))
+
+    contract_address = Web3.toChecksumAddress(CONTRACT_ADDRESS)
+    contract = w3.eth.contract(contract_address, abi=ABI)
+
+    return contract.functions.isApprovedForAll(Web3.toChecksumAddress(owner), Web3.toChecksumAddress(operator)).call()
 
 
 def get_hero(hero_id, rpc_address):

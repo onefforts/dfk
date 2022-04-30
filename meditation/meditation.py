@@ -100,7 +100,7 @@ def start_meditation(hero_id, stat1, stat2, stat3, attunement_crystal_address, p
     logger.debug("Transaction successfully sent !")
     logger.info("Waiting for transaction " + block_explorer_link(signed_tx.hash.hex()) + " to be mined")
     tx_receipt = w3.eth.wait_for_transaction_receipt(transaction_hash=signed_tx.hash, timeout=tx_timeout_seconds,
-                                                     poll_latency=3)
+                                                     poll_latency=2)
     logger.info("Transaction mined !")
 
     return tx_receipt
@@ -124,7 +124,7 @@ def complete_meditation(hero_id, private_key, nonce, gas_price_gwei, tx_timeout_
     logger.debug("Transaction successfully sent !")
     logger.info("Waiting for transaction " + block_explorer_link(signed_tx.hash.hex()) + " to be mined")
     tx_receipt = w3.eth.wait_for_transaction_receipt(transaction_hash=signed_tx.hash, timeout=tx_timeout_seconds,
-                                                     poll_latency=3)
+                                                     poll_latency=2)
     logger.info("Transaction mined !")
 
     return tx_receipt
@@ -184,12 +184,28 @@ def profile_active_meditations(address, id, rpc_address):
 def stat2id(label):
     stats = {
         'strength': 0,
-        'agility': 2,
-        'intelligence': 4,
-        'wisdom': 6,
-        'luck': 8,
-        'vitality': 10,
-        'endurance': 12,
-        'dexterity': 14
+        'agility': 1,
+        'intelligence': 2,
+        'wisdom': 3,
+        'luck': 4,
+        'vitality': 5,
+        'endurance': 6,
+        'dexterity': 7
     }
     return stats.get(label, None)
+
+
+def xp_per_Level(level):
+    next_level = level + 1
+    if level < 6:
+        return next_level * 1000
+    elif level < 9:
+        return 4000 + (next_level - 5) * 2000
+    elif level < 16:
+        return 12000 + (next_level - 9) * 4000
+    elif level < 36:
+        return 40000 + (next_level - 16) * 5000
+    elif level < 56:
+        return 140000 + (next_level - 36) * 7500
+    else:
+        return 290000 + (next_level - 56) * 10000
