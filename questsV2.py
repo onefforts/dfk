@@ -65,8 +65,10 @@ if __name__ == "__main__":
 
       if(quest_type in ['alchemist_assistance', 'arm_wrestling', 'card_game', 'dancing', 'darts', 'game_of_ball', 'helping_the_farm', 'puzzle_solving']):
         quest_contract = import_module('quests.training.'+quest_type).QUEST_CONTRACT_ADDRESS
+        level=1
       elif(quest_type in ['foraging', 'fishing']):
         quest_contract = import_module('quests.professions.'+quest_type).QUEST_CONTRACT_ADDRESS_V2
+        level=0
 
       if(get_min_stamina(questV2, quest_hero_ids) >= 15):
         questV2.start_quest(quest_contract, quest_hero_ids, attempts, level, private_key, w3.eth.getTransactionCount(account_address), gas_price_gwei, tx_timeout)
